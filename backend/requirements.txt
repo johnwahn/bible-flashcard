@@ -1,0 +1,5 @@
+Flask==2.3.3
+pymongo==4.6.1
+python-dotenv==1.0.1
+zappa==0.58.0
+flask-lambda==0.1.3

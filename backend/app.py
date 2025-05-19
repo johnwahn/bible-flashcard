@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
+from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 import re
@@ -16,6 +17,7 @@ collection = db["verses"]
 
 # Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Utility function to parse "창1:1-10" format
 def parse_range(reference: str):
@@ -37,6 +39,7 @@ def parse_range(reference: str):
 @app.route('/verses', methods=['GET'])
 def get_verses():
     try:
+        # Sets up query parameter
         range_ref = request.args.get('ref')  # e.g., ?ref=창1:1-10
         if not range_ref:
             return jsonify({"error": "Missing query parameter: ref"}), 400

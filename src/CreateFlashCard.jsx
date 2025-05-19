@@ -8,6 +8,7 @@ function CreateFlashcard() {
   const [terms, setTerms] = useState([{ term: '', definition: '' }]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
 
   const termRefs = useRef([]);
 
@@ -40,18 +41,12 @@ function CreateFlashcard() {
       if (!verse.trim()) return;
       try {
         console.log("verse is ", verse);
-        const res = await axios.get(`https://api.scripture.api.bible/v1/bibles/65eec8e0b60e656b-01/passages?reference=${encodeURIComponent(verse)}`,
-            {
-                headers: {
-                    'api-key': '5d7829b791f4fbae09dd829fddb25d8a', 
-                }
-            }
-        );
+        const res = await axios.get(`${awsGatewayURL}/verses?ref=${encodeURIComponent(verse)}`);
 
         // Access the passage content
-        const passageHtml = res.data.data[0].content;
-        // Use functional setState to update from latest state
-        setTerms(prevTerms => {
+         const passageHtml = res.data.map(v => v.text).join('<br/>');
+
+      setTerms(prevTerms => {
         const updated = [...prevTerms];
         if (updated[index]) {
           updated[index] = {

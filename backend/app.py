@@ -4,59 +4,76 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 import re
-from bible.kor_bible_aliases import BOOK_ALIASES
+from bible.bible_aliases import BOOK_ALIASES
 
-# Load environment variables
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 
-# MongoDB setup
 client = MongoClient(MONGO_URI)
 db = client["bible"]
-collection = db["verses"]
 
-# Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Utility function to parse "창1:1-10" format
 def parse_range(reference: str):
-    # Match both single and range (e.g., 창1:1 or 창1:1-3)
-    match = re.match(r"([^\d]+)(\d+):(\d+)(?:-(\d+))?", reference)
+    # Match pattern like "창 1:1-3" or "Genesis 1:1-3" and make case insensitive
+    match = re.match(r"([^\d]+)\s*(\d+):(\d+)(?:-(\d+))?", reference.strip(), re.IGNORECASE)
     if not match:
         raise ValueError("Invalid reference format")
 
     book_raw, chapter, start_verse, end_verse = match.groups()
-    book = BOOK_ALIASES.get(book_raw.strip(), book_raw.strip())  # normalize
+    
+    # Normalize book name case for English keys by lowercasing book_raw before lookup
+    # But if Korean or other languages, keep as is
+    if re.match(r'[a-zA-Z]', book_raw.strip()[0]):  # If first char is a letter, assume English
+        book_key = book_raw.strip().lower()
+        # Assuming your BOOK_ALIASES uses lower case keys for English
+        book = BOOK_ALIASES.get(book_key, book_raw.strip())
+    else:
+        # For non-English, keep original (like Korean)
+        book = BOOK_ALIASES.get(book_raw.strip(), book_raw.strip())
 
     chapter = int(chapter)
     start = int(start_verse)
-    end = int(end_verse) if end_verse else start  # support single verse
+    end = int(end_verse) if end_verse else start
 
-    return [f"{book}{chapter}:{v}" for v in range(start, end + 1)]
+    return book, chapter, start, end
 
-# API route
-@app.route('/verses', methods=['GET'])
+@app.route('/passage', methods=['GET'])
 def get_verses():
     try:
-        # Sets up query parameter
-        range_ref = request.args.get('ref')  # e.g., ?ref=창1:1-10
-        if not range_ref:
-            return jsonify({"error": "Missing query parameter: ref"}), 400
+        search = request.args.get('search')
+        version = request.args.get('version', 'esv').lower() # Default to ESV
 
-        verse_ids = parse_range(range_ref)
-        results = list(collection.find({"_id": {"$in": verse_ids}}))
+        if not search:
+            return jsonify({"error": "Missing query parameter: search"}), 400
 
-        # Sort according to input order
-        results.sort(key=lambda doc: verse_ids.index(doc["_id"]))
+        collection_name = f"bible_{version}"
+        if collection_name not in db.list_collection_names():
+            return jsonify({"error": f"Version '{version}' not found"}), 404
 
-        # Convert to plain dict
-        verses = [{"id": doc["_id"], "text": doc["text"]} for doc in results]
+        collection = db[collection_name]
+
+        book, chapter, start_verse, end_verse = parse_range(search)
+
+        # Mongo query: find verses with book, chapter, and verse between start and end
+        query = {
+            "book": book,
+            "chapter": chapter,
+            "verse": {"$gte": start_verse, "$lte": end_verse}
+        }
+
+        results = list(collection.find(query))
+
+        # Sort results by verse number ascending
+        results.sort(key=lambda doc: doc["verse"])
+
+        verses = [{"book": doc["book"], "chapter": doc["chapter"], "verse": doc["verse"], "text": doc["text"]} for doc in results]
+
         return jsonify(verses)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Run the app
 if __name__ == "__main__":
     app.run(debug=True)

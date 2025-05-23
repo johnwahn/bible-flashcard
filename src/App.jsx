@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaRegClone } from 'react-icons/fa';
+import { FaRegClone, FaEdit, FaTrash } from 'react-icons/fa';
 
 function App() {
   const navigate = useNavigate();
@@ -49,16 +49,17 @@ function App() {
                 </div>
               </Link>
 
-              {/* Edit & Delete Buttons */}
-              <div className="space-x-2">
-                <Link to={`/edit/${idx}`} className="text-blue-500 hover:underline ml-4">
-                    Edit
+              {/* Icon Buttons */}
+              <div className="flex items-center space-x-3">
+                <Link to={`/edit/${idx}`} className="text-blue-500 hover:text-blue-700">
+                  <FaEdit className="w-5 h-5" title="Edit" />
                 </Link>
                 <button
                   onClick={() => handleDelete(idx)}
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  className="text-red-500 hover:text-red-700"
+                  title="Delete"
                 >
-                  Delete
+                  <FaTrash className="w-5 h-5" />
                 </button>
               </div>
             </div>

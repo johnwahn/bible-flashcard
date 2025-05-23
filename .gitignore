@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .env
 backend/venv/
+backend/zappa_settings.json
 
 # Editor directories and files
 .vscode/*

@@ -41,6 +41,11 @@ def parse_range(reference: str):
 
 @app.route('/passage', methods=['GET'])
 def get_verses():
+    
+    api_key = request.headers.get('x-api-key')
+    if api_key != os.environ.get('GATEWAY_API_KEY'):
+        return jsonify({"message": "Unauthorized"}), 401
+    
     try:
         search = request.args.get('search')
         version = request.args.get('version', 'esv').lower() # Default to ESV

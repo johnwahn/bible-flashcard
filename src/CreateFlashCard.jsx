@@ -9,6 +9,7 @@ function CreateFlashcard() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
+  const gateWayKey = import.meta.env.VITE_AWS_GATEWAY_KEY;
 
   const termRefs = useRef([]);
 
@@ -41,7 +42,12 @@ function CreateFlashcard() {
       if (!verse.trim()) return;
       try {
         console.log("verse is ", verse);
-        const res = await axios.get(`${awsGatewayURL}/verses?ref=${encodeURIComponent(verse)}`);
+        const res = await axios.get(`${awsGatewayURL}/passage?search=${encodeURIComponent(verse)}`,
+          {
+            headers: {
+              'x-api-key': gateWayKey
+            }
+          });
 
         // Access the passage content
          const passageHtml = res.data.map(v => v.text).join('<br/>');

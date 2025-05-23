@@ -2,16 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
+import BibleVersionDropdown from './BibleVersionDropdown';
 
 function CreateFlashcard() {
   const navigate = useNavigate();
-  const [terms, setTerms] = useState([{ term: '', definition: '' }]);
+  const [terms, setTerms] = useState([{ term: '', definition: '', version: 'ESV' }]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+
   const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
   const gateWayKey = import.meta.env.VITE_AWS_GATEWAY_KEY;
-
-  const termRefs = useRef([]);
 
   const handleTermChange = (index, field, value) => {
     const updated = [...terms];
@@ -20,7 +20,7 @@ function CreateFlashcard() {
   };
 
   const addTerm = () => {
-    setTerms([...terms, { term: '', definition: '' }]);
+    setTerms([...terms, { term: '', definition: '', version: 'ESV' }]);
   };
 
   const removeTerm = (index) => {
@@ -36,53 +36,44 @@ function CreateFlashcard() {
     navigate('/');
   };
 
-  // Debounced API call logic
   const debouncedFetchVerse = useRef(
-    debounce(async (verse, index) => {
+    debounce(async (verse, index, version) => {
       if (!verse.trim()) return;
       try {
-        console.log("verse is ", verse);
-        const res = await axios.get(`${awsGatewayURL}/passage?search=${encodeURIComponent(verse)}`,
-          {
-            headers: {
-              'x-api-key': gateWayKey
-            }
-          });
+        const res = await axios.get(`${awsGatewayURL}/passage`, {
+          headers: { 'x-api-key': gateWayKey },
+          params: { search: verse, version },
+        });
 
-        // Access the passage content
-         const passageHtml = res.data.map(v => v.text).join('<br/>');
+        const passageHtml = res.data.map(v => v.text).join('<br/>');
 
-      setTerms(prevTerms => {
-        const updated = [...prevTerms];
-        if (updated[index]) {
-          updated[index] = {
-            ...updated[index],
-            definition: passageHtml,
-          };
-        }
-        return updated;
-      });
+        setTerms(prevTerms => {
+          const updated = [...prevTerms];
+          if (updated[index]) {
+            updated[index].definition = passageHtml;
+          }
+          return updated;
+        });
       } catch (err) {
-        console.error('Error fetching verse:', verse);
+        console.error(`Error fetching ${verse} (${version})`, err);
       }
     }, 1000)
   ).current;
 
-  // Watch for changes to `terms.term`
   useEffect(() => {
     terms.forEach((t, i) => {
-      debouncedFetchVerse(t.term, i);
+      debouncedFetchVerse(t.term, i, t.version);
     });
-  }, [terms.map(t => t.term).join('|'), terms.length]); // triggers effect only when length of `terms` change
+  }, [terms.map(t => `${t.term}-${t.version}`).join('|'), terms.length]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-6">
-      <div className="bg-white p-6 rounded shadow w-full max-w-3xl flex flex-col space-y-4">
-        <h1 className="text-xl font-bold text-center w-full">📝 Create a New Flashcard Set</h1>
+      <div className="bg-white p-6 rounded shadow w-full max-w-6xl flex flex-col space-y-4">
+        <h1 className="text-2xl font-bold text-center w-full">📝 Create a New Flashcard Set</h1>
 
         <input
           className="w-full border p-2 rounded"
-          placeholder="Enter a title, like 'Book of John - Chapter 3'"
+          placeholder="Enter a title"
           value={title}
           onChange={e => setTitle(e.target.value)}
         />
@@ -95,17 +86,33 @@ function CreateFlashcard() {
         />
 
         {terms.map((item, index) => (
-          <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+          <div
+            key={index}
+            className="flex flex-col sm:flex-row sm:items-start gap-4 w-full"
+          >
+            {/* 1. Verse input */}
             <input
-              className="flex-1 border p-2 rounded"
+              className="flex-[2] border p-2 rounded"
               placeholder="e.g. John 3:16"
-              value={item.term ?? ''}
+              value={item.term}
               onChange={(e) => handleTermChange(index, 'term', e.target.value)}
             />
+
+            {/* 2. Bible passage */}
             <div
-                className="flex-1 border p-2 rounded bg-gray-50 overflow-auto"
-                dangerouslySetInnerHTML={{ __html: item.definition }}
+              className="flex-[3] border p-2 rounded bg-gray-50 max-h-48 overflow-y-auto"
+              dangerouslySetInnerHTML={{ __html: item.definition }}
             />
+
+            {/* 3. Version dropdown */}
+            <div className="flex-[1]">
+              <BibleVersionDropdown
+                selectedVersion={item.version}
+                setSelectedVersion={(val) => handleTermChange(index, 'version', val)}
+              />
+            </div>
+
+            {/* Remove button */}
             <button
               onClick={() => removeTerm(index)}
               className="text-red-500 hover:text-red-700"

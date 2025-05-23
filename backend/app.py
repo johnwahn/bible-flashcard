@@ -79,6 +79,19 @@ def get_verses():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/bible-versions', methods=['GET'])
+def get_bible_versions():
+    api_key = request.headers.get('x-api-key')
+    if api_key != os.environ.get('GATEWAY_API_KEY'):
+        return jsonify({"message": "Unauthorized"}), 401
+    try:
+        versions_collection = db["bible_versions"]
+        versions = list(versions_collection.find({}, {"_id": 0}))  # Exclude _id from output
+        return jsonify(versions)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

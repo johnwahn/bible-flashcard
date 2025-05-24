@@ -25,3 +25,16 @@ backend/venv/
 *.sln
 *.sw?
 backend/zappa_settings.json
+backend/scripts/ESV_bible.json
+backend/scripts/kor_krv_bible.json
+backend/routes/__pycache__/passage_routes.cpython-311.pyc
+backend/routes/__pycache__/versions_routes.cpython-311.pyc
+backend/middleware/__pycache__/middleWareRoutes.cpython-311.pyc
+backend/bible/__pycache__/bible_aliases.cpython-311.pyc
+backend/utils/__pycache__/bible_parser.cpython-311.pyc
+backend/utils/__pycache__/database.cpython-311.pyc
+backend/zappa_settings.json
+backend/flashcard-backend-dev-template-1747684966.json
+backend/kor_bible.json
+package-lock.json
+package.json

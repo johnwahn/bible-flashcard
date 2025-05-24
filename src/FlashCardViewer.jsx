@@ -36,17 +36,26 @@ function FlashcardViewer() {
       <h1 className="text-xl font-bold mb-2">{flashcard.title}</h1>
       <p className="mb-4 text-gray-600">{flashcard.description}</p>
 
-      <div
-        className="w-full max-w-md bg-white p-6 rounded shadow text-center cursor-pointer"
-        onClick={() => setFlipped(!flipped)}
-      >
-        <p className="text-lg">
-            {flipped
-                ? <span dangerouslySetInnerHTML={{ __html: flashcard.terms[current].definition }} />
-                : flashcard.terms[current].term}
+      <div className="w-full max-w-md card-container mb-4">
+        <div
+          className={`bg-white rounded shadow text-center cursor-pointer card-flip ${flipped ? 'card-flip-inner' : ''}`}
+          onClick={() => setFlipped(!flipped)}
+        >
+          <div className="card-front">
+            <p className="text-lg break-words">{flashcard.terms[current].term}</p>
+          </div>
+          <div className="card-back">
+            <p
+              className="text-lg break-words"
+              dangerouslySetInnerHTML={{ __html: flashcard.terms[current].definition }}
+            />
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mt-2 text-center">
+          Click to {flipped ? 'see reference' : 'see passage'}
         </p>
-        <p className="text-xs text-gray-400 mt-2">Click to {flipped ? 'see reference' : 'see passage'}</p>
       </div>
+
 
         <div className="flex space-x-4 mt-4">
             <button

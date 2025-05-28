@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
 import BibleVersionDropdown from './BibleVersionDropdown';
+import useBibleVersions from './customHooks/useFetchBibleVersions';
 
 function CreateFlashcard() {
   const navigate = useNavigate();
@@ -13,7 +14,8 @@ function CreateFlashcard() {
   const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
   const gateWayKey = import.meta.env.VITE_AWS_GATEWAY_KEY;
   const localHost = "http://127.0.0.1:5000"
-  
+
+  const versions = useBibleVersions();
 
   const handleTermChange = (index, field, value) => {
     const updated = [...terms];
@@ -58,7 +60,7 @@ function CreateFlashcard() {
       } catch (err) {
         console.error(`Error fetching ${verse} (${version})`, err);
       }
-    }, 1000)
+    }, 1500)
   ).current;
 
   useEffect(() => {
@@ -110,6 +112,7 @@ function CreateFlashcard() {
               <BibleVersionDropdown
                 selectedVersion={item.version}
                 setSelectedVersion={(val) => handleTermChange(index, 'version', val)}
+                versions={versions}
               />
             </div>
 

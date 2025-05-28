@@ -12,6 +12,8 @@ function CreateFlashcard() {
 
   const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
   const gateWayKey = import.meta.env.VITE_AWS_GATEWAY_KEY;
+  const localHost = "http://127.0.0.1:5000"
+  
 
   const handleTermChange = (index, field, value) => {
     const updated = [...terms];
@@ -40,8 +42,7 @@ function CreateFlashcard() {
     debounce(async (verse, index, version) => {
       if (!verse.trim()) return;
       try {
-        const res = await axios.get(`${awsGatewayURL}/passage`, {
-          headers: { 'x-api-key': gateWayKey },
+        const res = await axios.get(`${localHost}/api/fetch-verse`, {
           params: { search: verse, version },
         });
 

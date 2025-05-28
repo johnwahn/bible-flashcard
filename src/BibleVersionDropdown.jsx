@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import useClickOutside from './customHooks/useClickOutside';
 
 function BibleVersionDropdown({ selectedVersion, setSelectedVersion }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,9 +15,7 @@ function BibleVersionDropdown({ selectedVersion, setSelectedVersion }) {
   useEffect(() => {
     const fetchVersions = async () => {
       try {
-        const res = await axios.get(`${localHost}/bible-versions`, {
-          headers: { 'x-api-key': gateWayKey },
-        });
+        const res = await axios.get(`${awsGatewayURL}/api/fetch-versions`);
 
         const organized = res.data.reduce((acc, v) => {
           const lang = v.language.toLowerCase();
@@ -35,15 +34,7 @@ function BibleVersionDropdown({ selectedVersion, setSelectedVersion }) {
   }, []);
 
   // 👇 Add outside click listener
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  useClickOutside(dropdownRef, () => setIsOpen(false));
 
   const handleSelect = (version) => {
     setSelectedVersion(version);

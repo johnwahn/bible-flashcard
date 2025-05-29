@@ -12,7 +12,6 @@ function CreateFlashcard() {
   const [description, setDescription] = useState('');
 
   const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
-  const gateWayKey = import.meta.env.VITE_AWS_GATEWAY_KEY;
   const localHost = "http://127.0.0.1:5000"
 
   const versions = useBibleVersions();

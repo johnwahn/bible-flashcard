@@ -6,12 +6,15 @@ import CreateFlashcard from './CreateFlashCard';
 import FlashcardViewer from './FlashCardViewer';
 import EditFlashcard from './EditFlashcard';
 import './index.css';
+import Login from './Login';
+import Home from './Home';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/create" element={<CreateFlashcard />} />
         <Route path="/view/:index" element={<FlashcardViewer />} />
         <Route path="/edit/:id" element={<EditFlashcard />} />

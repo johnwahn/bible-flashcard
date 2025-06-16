@@ -11,8 +11,8 @@ function CreateFlashcard() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
-  const localHost = "http://127.0.0.1:5000"
+  const useProdAPI = import.meta.env.VITE_USE_PROD_API === 'true';
+  const apiURL = useProdAPI ? import.meta.env.VITE_AWS_GATEWAY_URL : import.meta.env.VITE_LOCAL_HOST_URL;
 
   const versions = useBibleVersions();
 
@@ -43,7 +43,7 @@ function CreateFlashcard() {
     debounce(async (verse, index, version) => {
       if (!verse.trim()) return;
       try {
-        const res = await axios.get(`${localHost}/api/fetch-verse`, {
+        const res = await axios.get(`${apiURL}/api/fetch-verse`, {
           params: { search: verse, version },
         });
 

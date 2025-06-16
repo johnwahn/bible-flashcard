@@ -4,12 +4,7 @@ import useClickOutside from './customHooks/useClickOutside';
 
 function BibleVersionDropdown({ selectedVersion, setSelectedVersion, versions }) {
   const [isOpen, setIsOpen] = useState(false);
-
   const dropdownRef = useRef(null); // 👈 Add ref to detect outside clicks
-
-  const awsGatewayURL = import.meta.env.VITE_AWS_GATEWAY_URL;
-  const gateWayKey = import.meta.env.VITE_AWS_GATEWAY_KEY;
-  const localHost = import.meta.env.VITE_LOCAL_HOST_URL;
 
   // 👇 Add outside click listener
   useClickOutside(dropdownRef, () => setIsOpen(false));

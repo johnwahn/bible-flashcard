@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import debounce from 'lodash.debounce';
 import BibleVersionDropdown from './BibleVersionDropdown';
 import useBibleVersions from './customHooks/useFetchBibleVersions';
+import useDebouncedFetchVerse from './customHooks/useFetchVerse';
 
 function CreateFlashcard() {
   const navigate = useNavigate();
@@ -12,9 +11,12 @@ function CreateFlashcard() {
   const [description, setDescription] = useState('');
 
   const useProdAPI = import.meta.env.VITE_USE_PROD_API === 'true';
-  const apiURL = useProdAPI ? import.meta.env.VITE_AWS_GATEWAY_URL : import.meta.env.VITE_LOCAL_HOST_URL;
+  const apiURL = useProdAPI
+    ? import.meta.env.VITE_AWS_GATEWAY_URL
+    : import.meta.env.VITE_LOCAL_HOST_URL;
 
   const versions = useBibleVersions();
+  const debouncedFetchVerse = useDebouncedFetchVerse(apiURL, setTerms);
 
   const handleTermChange = (index, field, value) => {
     const updated = [...terms];
@@ -38,29 +40,6 @@ function CreateFlashcard() {
     localStorage.setItem('flashcards', JSON.stringify([...flashcards, newCard]));
     navigate('/');
   };
-
-  const debouncedFetchVerse = useRef(
-    debounce(async (verse, index, version) => {
-      if (!verse.trim()) return;
-      try {
-        const res = await axios.get(`${apiURL}/api/fetch-verse`, {
-          params: { search: verse, version },
-        });
-
-        const passageHtml = res.data.map(v => v.text).join('<br/>');
-
-        setTerms(prevTerms => {
-          const updated = [...prevTerms];
-          if (updated[index]) {
-            updated[index].definition = passageHtml;
-          }
-          return updated;
-        });
-      } catch (err) {
-        console.error(`Error fetching ${verse} (${version})`, err);
-      }
-    }, 1500)
-  ).current;
 
   useEffect(() => {
     terms.forEach((t, i) => {

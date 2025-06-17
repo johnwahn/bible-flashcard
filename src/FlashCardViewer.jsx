@@ -32,7 +32,7 @@ function FlashcardViewer() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <Link to="/" className="mb-4 text-blue-600 hover:underline">← Back</Link>
+      <Link to="/home" className="mb-4 text-blue-600 hover:underline">← Back</Link>
       <h1 className="text-xl font-bold mb-2">{flashcard.title}</h1>
       <p className="mb-4 text-gray-600">{flashcard.description}</p>
 

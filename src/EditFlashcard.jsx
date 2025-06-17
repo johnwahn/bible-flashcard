@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import useDebouncedFetchVerse from './customHooks/useFetchVerse';
+
 
 function EditFlashcard() {
   const { id } = useParams();
@@ -8,6 +10,21 @@ function EditFlashcard() {
   const [flashcards, setFlashcards] = useState([]);
   const [title, setTitle] = useState('');
   const [terms, setTerms] = useState([]);
+
+  // Make this a function
+  const useProdAPI = import.meta.env.VITE_USE_PROD_API === 'true';
+const apiURL = useProdAPI
+  ? import.meta.env.VITE_AWS_GATEWAY_URL
+  : import.meta.env.VITE_LOCAL_HOST_URL;
+
+  // Make this a function as well
+  const debouncedFetchVerse = useDebouncedFetchVerse(apiURL, setTerms);
+  useEffect(() => {
+  terms.forEach((t, i) => {
+    debouncedFetchVerse(t.term, i, t.version || 'ESV');
+  });
+}, [terms.map(t => `${t.term}-${t.version || 'ESV'}`).join('|'), terms.length]);
+
 
   useEffect(() => {
     const saved = localStorage.getItem('flashcards');
@@ -47,7 +64,7 @@ function EditFlashcard() {
     };
     setFlashcards(updatedFlashcards);
     localStorage.setItem('flashcards', JSON.stringify(updatedFlashcards));
-    navigate('/');
+    navigate('/home');
   };
 
   return (

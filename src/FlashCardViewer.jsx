@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import useDocumentTitle from './customHooks/useDocumentTitle';
 
 function FlashcardViewer() {
   const { index } = useParams();
   const [flashcard, setFlashcard] = useState(null);
   const [current, setCurrent] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  
+  useDocumentTitle(flashcard?.title || "Loading...");
 
   useEffect(() => {
     const saved = localStorage.getItem('flashcards');

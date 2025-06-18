@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useDebouncedFetchVerse from './customHooks/useFetchVerse';
+import useDocumentTitle from './customHooks/useDocumentTitle';
 
 
 function EditFlashcard() {
@@ -16,6 +17,8 @@ function EditFlashcard() {
 const apiURL = useProdAPI
   ? import.meta.env.VITE_AWS_GATEWAY_URL
   : import.meta.env.VITE_LOCAL_HOST_URL;
+
+  useDocumentTitle("Edit Flash Card Set")
 
   // Make this a function as well
   const debouncedFetchVerse = useDebouncedFetchVerse(apiURL, setTerms);

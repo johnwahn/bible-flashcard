@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BibleVersionDropdown from './BibleVersionDropdown';
 import useBibleVersions from './customHooks/useFetchBibleVersions';
 import useDebouncedFetchVerse from './customHooks/useFetchVerse';
+import useDocumentTitle from './customHooks/useDocumentTitle';
 
 function CreateFlashcard() {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ function CreateFlashcard() {
     : import.meta.env.VITE_LOCAL_HOST_URL;
 
   const versions = useBibleVersions();
+  useDocumentTitle("Generate Flash Card Set")
+
   const debouncedFetchVerse = useDebouncedFetchVerse(apiURL, setTerms);
 
   const handleTermChange = (index, field, value) => {

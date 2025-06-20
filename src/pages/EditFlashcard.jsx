@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import useDebouncedFetchVerse from './customHooks/useFetchVerse';
-import useDocumentTitle from './customHooks/useDocumentTitle';
+import useDebouncedFetchVerse from '../customHooks/useFetchVerse';
+import useDocumentTitle from '../customHooks/useDocumentTitle';
 
 
 function EditFlashcard() {

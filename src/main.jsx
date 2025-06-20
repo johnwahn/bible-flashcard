@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import App from './App';
-import CreateFlashcard from './CreateFlashCard';
-import FlashcardViewer from './FlashCardViewer';
-import EditFlashcard from './EditFlashcard';
+import CreateFlashcard from './pages/CreateFlashCard';
+import FlashcardViewer from './pages/FlashCardViewer';
+import EditFlashcard from './pages/EditFlashcard';
 import './index.css';
-import Login from './Login';
-import Home from './Home';
+import Login from './pages/Login';
+import Home from './pages/Home';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import useDocumentTitle from './customHooks/useDocumentTitle';
+import useDocumentTitle from '../customHooks/useDocumentTitle';
 
 function FlashcardViewer() {
   const { index } = useParams();

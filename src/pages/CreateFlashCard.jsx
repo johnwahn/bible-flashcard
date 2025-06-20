@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BibleVersionDropdown from './BibleVersionDropdown';
-import useBibleVersions from './customHooks/useFetchBibleVersions';
-import useDebouncedFetchVerse from './customHooks/useFetchVerse';
-import useDocumentTitle from './customHooks/useDocumentTitle';
+import BibleVersionDropdown from '../BibleVersionDropdown';
+import useBibleVersions from '../customHooks/useFetchBibleVersions';
+import useDebouncedFetchVerse from '../customHooks/useFetchVerse';
+import useDocumentTitle from '../customHooks/useDocumentTitle';
 
 function CreateFlashcard() {
   const navigate = useNavigate();
